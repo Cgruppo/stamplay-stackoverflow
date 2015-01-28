@@ -9,7 +9,7 @@ module.exports = {
 	},
 
 	app: {
-		src: ['assets/app.min.js']
+		src: ['assets/app.js', 'assets/app.min.js', 'assets/app.min.map']
 	}
 
 };

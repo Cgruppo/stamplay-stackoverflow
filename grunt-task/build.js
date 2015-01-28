@@ -20,8 +20,7 @@ module.exports = function (grunt) {
 	//Builds complete app
 	grunt.registerTask('buildapp', 'Create app.min.js asset', [
 		'clean:app',
-		// 'ngmin:app',
-		'concat:app',
+		'ngAnnotate:js',
 		'uglify:app'
 	]);
 

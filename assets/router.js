@@ -39,159 +39,147 @@ var getURLParameters = function (name) {
 };
 
 app.config(function ($interpolateProvider, $routeProvider, $locationProvider, $sceDelegateProvider, $provide) {
-	/* Since templates are on AWS S3 we load templates from http whitelisting the assets URL */
-	$sceDelegateProvider.resourceUrlWhitelist(['self', 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/**']);
+		/* Since templates are on AWS S3 we load templates from http whitelisting the assets URL */
+		$sceDelegateProvider.resourceUrlWhitelist(['self', _ASSETS_URL + '/assets/**']);
 
-	/* Since Stamplay server side uses Handlebars, we are changing the Angular curly brackets in square brackets */
-	$interpolateProvider.startSymbol('[[');
-	$interpolateProvider.endSymbol(']]');
+		/* Since Stamplay server side uses Handlebars, we are changing the Angular curly brackets in square brackets */
+		$interpolateProvider.startSymbol('[[');
+		$interpolateProvider.endSymbol(']]');
 
-	/* Activating the HTML 5 mode for client side route handling */
-	$locationProvider.html5Mode('true');
+		/* Activating the HTML 5 mode for client side route handling */
+		$locationProvider.html5Mode('true');
 
-	/* Textangular options, same options as StackOverflow */
-	$provide.decorator('taOptions', ['$delegate',
+		/* Textangular options, same options as StackOverflow */
+		$provide.decorator('taOptions', ['$delegate',
 		function (taOptions) {
-			taOptions.toolbar =
+				taOptions.toolbar =
 				[
 					['bold', 'italics'], ['insertLink', 'quote', 'pre', 'insertImage'], ['ol', 'ul'], ['h1', 'h2'], ['undo', 'redo'], ['html']
 				];
-			return taOptions;
+				return taOptions;
 			}
 	]);
 
-	/* Route definition */
-	$routeProvider
+		/* Route definition */
+		$routeProvider
 
-	/* Stamplay login route */
-	.when('/auth/v0/github/connect', {
-		controller: 'loginCtrl',
-		templateUrl: 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/templateEmpty.html'
-	})
+		/* Stamplay login route */
+			.when('/auth/v0/github/connect', {
+			controller: 'loginCtrl',
+			templateUrl: _ASSETS_URL + '/assets/templateEmpty.html'
+		})
 
-	/* Stamplay logout route */
-	.when('/auth/v0/logout', {
-		controller: 'logoutCtrl',
-		templateUrl: 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/templateEmpty.html'
-	})
+		/* Stamplay logout route */
+		.when('/auth/v0/logout', {
+			controller: 'logoutCtrl',
+			templateUrl: _ASSETS_URL + '/assets/templateEmpty.html'
+		})
 
-	/* Index route, shows a list of questions */
-	.when('/index', {
-		templateUrl: 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/templateIndex.html',
-		controller: 'homeCtrl',
-		resolve: {
-			tag: function (tagService) {
-				return tagService.getPromise();
-			}
-		}
-	})
+		/* Index route, shows a list of questions */
+		.when('/index', {
+			templateUrl: _ASSETS_URL + '/assets/templateIndex.html',
+			controller: 'homeCtrl'
+		})
 
 
-	/* Shows a question with the related answers */
-	.when('/answer', {
-		templateUrl: 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/templateAnswer.html',
-		controller: 'answerCtrl',
-		/* Dependencies */
-		resolve: {
-			/* Populating the question with the related answers */
-			question: function ($q, $http, $routeParams) {
-				var def = $q.defer();
-				var questionId = getURLParameters('id');
+		/* Shows a question with the related answers */
+		.when('/answer', {
+			templateUrl: _ASSETS_URL + '/assets/templateAnswer.html',
+			controller: 'answerCtrl',
+			/* Dependencies */
+			resolve: {
+				/* Populating the question with the related answers */
+				question: function ($q, $http, $routeParams) {
+					var def = $q.defer();
+					var questionId = getURLParameters('id');
 
-				/* Get the question with _id = questionId */
-				var url =  '/api/cobject/v0/question/' + questionId;
-				$http({
-					method: 'GET', 
-					url: url,
-					params : {
-						populate :true
-					}
-				}).then(function (response) {
-					var question = response.data;
-
-					/* The answers are now populated */
-					var allAnswers = question.answers;
-					/* Sorting answers */
-					allAnswers = allAnswers.sort(sortAnswers);
-					question.answers = allAnswers;
-
-					/* Populating the question's author */
-					$http.get('/api/user/v0/users/' + question.author).success(
-						function (res) {
-							question.author = res;
-							def.resolve(question);
+					/* Get the question with _id = questionId */
+					var url = '/api/cobject/v0/question/' + questionId;
+					$http({
+						method: 'GET',
+						url: url,
+						params: {
+							populate: true
 						}
-					);
+					}).then(function (response) {
+						var question = response.data;
 
-				});
-				return def.promise;
-			},
-			/* Gettings all available tags */
-			tag: function (tagService) {
-				return tagService.getPromise();
+						/* The answers are now populated */
+						var allAnswers = question.answers;
+						/* Sorting answers */
+						allAnswers = allAnswers.sort(sortAnswers);
+						question.answers = allAnswers;
+
+						/* Populating the question's author */
+						$http.get('/api/user/v0/users/' + question.author).success(
+							function (res) {
+								question.author = res;
+								def.resolve(question);
+							}
+						);
+
+					});
+					return def.promise;
+				},
+				/* Gettings all available tags */
+				tag: function (tagService) {
+					return tagService.getPromise();
+				}
 			}
-		}
 
-	})
+		})
 
 
-	/* Create a new question */
-	.when('/questions', {
-		templateUrl: 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/templateQuestion.html',
-		controller: 'createQuestionCtrl'
-	})
+		/* Create a new question */
+		.when('/questions', {
+			templateUrl: _ASSETS_URL + '/assets/templateQuestion.html',
+			controller: 'createQuestionCtrl'
+		})
 
-	/* Shows all available tags */
-	.when('/tags', {
-		templateUrl: 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/templateTags.html',
-		controller: 'tagsCtrl',
-		resolve: {
-			tag: function (tagService) {
-				return tagService.getPromise();
+		/* Shows all available tags */
+		.when('/tags', {
+			templateUrl: _ASSETS_URL + '/assets/templateTags.html',
+			controller: 'tagsCtrl',
+			resolve: {
+				tag: function (tagService) {
+					return tagService.getPromise();
+				}
 			}
-		}
-	})
+		})
 
-	/* Shows all available users */
-	.when('/users', {
-		templateUrl: 'https://s3-eu-west-1.amazonaws.com/cdn.stamplay.com/apps/'+ appId +'/assets/templateUsers.html',
-		controller: 'usersCtrl',
-		resolve: {
-			/* Getting all users */
-			users: function ($q, $http) {
-				var def = $q.defer();
-				$http({
-					method: 'GET',
-					url: '/api/user/v0/users'
-				}).success(function (response) {
-					def.resolve(response.data);
-				});
-				return def.promise;
+		/* Shows all available users */
+		.when('/users', {
+			templateUrl: _ASSETS_URL + '/assets/templateUsers.html',
+			controller: 'usersCtrl',
+			resolve: {
+				/* Getting all users */
+				users: ['$q', '$http', 'userService', function ($q, $http, userService) {
+					return userService.fetchAll()
+				}]
 			}
-		}
-	})
+		})
 
-	/* If not route is matching */
-	.otherwise({
-		redirectTo: '/index'
-	});
-})
-/* 
-	Before starting the application we're saving the user if present in the rootScope
-	email, userId, profileImg and displayName variables are initializated in layout 
-*/
-.run(['$rootScope', '$http',
+		/* If not route is matching */
+		.otherwise({
+			redirectTo: '/index'
+		});
+	})
+	/* 
+		Before starting the application we're saving the user if present in the rootScope
+		email, userId, profileImg and displayName variables are initializated in layout 
+	*/
+	.run(['$rootScope', '$http',
 	function ($rootScope, $http) {
 
-		if (userLogged) {
+			if (userLogged) {
 
-			$rootScope.user = {
-				email: email,
-				id: userId,
-				profileImg: profileImg,
-				displayName: displayName
-			};
-		}
+				$rootScope.user = {
+					email: email,
+					id: userId,
+					profileImg: profileImg,
+					displayName: displayName
+				};
+			}
 
 		}
 

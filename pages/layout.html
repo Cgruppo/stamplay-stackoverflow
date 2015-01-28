@@ -5,20 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{{assetsUrl}}/assets/favicon.png">
+    <link rel="shortcut icon" href="{{assetsUrl}}/assets/favicon.ico">
 
-    <title>Stamplay | An awesome new app</title>
+    <title>Stamplay | StackOverflow clone</title>
 
     <!-- Bootstrap core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="{{assetsUrl}}/assets/index.css" rel="stylesheet">
-    <link href="{{assetsUrl}}/assets/question.css" rel="stylesheet">
-    <link href="{{assetsUrl}}/assets/answer.css" rel="stylesheet">
-    <link href="{{assetsUrl}}/assets/tags.css" rel="stylesheet">
-    <link href="{{assetsUrl}}/assets/users.css" rel="stylesheet">
-    <link href="{{assetsUrl}}/assets/footer.css" rel="stylesheet">
-    <link href="{{assetsUrl}}/assets/sidebar.css" rel="stylesheet">
+    <link href="{{assetsUrl}}/assets/stamplay-stackoverflow.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <base href="/">
@@ -50,13 +44,18 @@
               </a>
             </div>
             <div class="col-md-6">
-              <ul class="nav navbar-nav pull-right">
-                <li ng-hide="user"><a href="/auth/v0/github/connect" style="color:white">Login</a></li>
+              <ul class="nav navbar-nav pull-right" ng-controller="pointsCtrl" ng-cloak>
+
+                <li ng-hide="user">
+                  <a href="/auth/v0/github/connect" style="color:white">Login</a>
+                </li>
                 <li class="dropdown pull-right"  ng-show="user.id">
                   <a class="dropdown-toggle" data-toggle="dropdown">
                     {{user.displayName}} 
                     <img src="{{user.profileImg}}" style="width:24px; height:24px; margin-left:20px;">
                     <span class="caret"></span>
+                    &nbsp;
+                    [[points]]
                   </a>
                   <ul class="dropdown-menu pull-right" role="menu">
                     <li><a href="/auth/v0/logout">Logout</a></li>
@@ -136,44 +135,39 @@
       <script>
         var _APP_ID = "{{appId}}";
         var _APP_DOMAIN = "{{baseUrl}}";
+        var _ASSETS_URL ="{{assetsUrl}}";
       </script>
+
       <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
       <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
       <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
       <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular-route.js"></script>
-      <script src="{{assetsUrl}}/assets/ng-infinite-scroll.js"></script>
-
-
-      <script src="{{assetsUrl}}/assets/ui-bootstrap-0.11.0.min.js"></script>
       <script src='https://cdnjs.cloudflare.com/ajax/libs/textAngular/1.2.2/textAngular-sanitize.min.js'></script>
       <script src='https://cdnjs.cloudflare.com/ajax/libs/textAngular/1.2.2/textAngular.min.js'></script>
 
-      <script src="{{assetsUrl}}/assets/rangy-core.js"></script>
+      <script src="{{assetsUrl}}/assets/libs.min.js"></script>
+        
+      <!-- Minfied controllers -->  
+      <script src="{{assetsUrl}}/assets/app.min.js"></script>
 
-      <script src="{{assetsUrl}}/assets/async.js"></script>
-      <script src="{{assetsUrl}}/assets/moment.js"></script>
+      <!-- DEV MODE -->
       
-      <!-- Defines angular app variable with the tag service -->  
-      <script src="{{assetsUrl}}/assets/module.js"></script>
-
-      <!-- Angular configuration and application routes -->  
-      <script src="{{assetsUrl}}/assets/router.js"></script>
-
-      <!-- Handles login -->  
-      <script src="{{assetsUrl}}/assets/loginCtrl.js"></script>
-      <!-- Handles logout -->  
-      <script src="{{assetsUrl}}/assets/logoutCtrl.js"></script>
-      <!-- Handles menu -->  
-      <script src="{{assetsUrl}}/assets/menuCtrl.js"></script>
-
-      <script src="{{assetsUrl}}/assets/pointsCtrl.js"></script>
-      <script src="{{assetsUrl}}/assets/createQuestionCtrl.js"></script>
-      <script src="{{assetsUrl}}/assets/tagsCtrl.js"></script>
-      <script src="{{assetsUrl}}/assets/usersCtrl.js"></script>
-      <script src="{{assetsUrl}}/assets/answerCtrl.js"></script>
-      <script src="{{assetsUrl}}/assets/answerCreatorCtrl.js"></script>
-      <script src="{{assetsUrl}}/assets/homeCtrl.js"></script>
-
+      <!-- 
+        <script src="{{assetsUrl}}/assets/module.js"></script>
+        <script src="{{assetsUrl}}/assets/tagService.js"></script>
+        <script src="{{assetsUrl}}/assets/userService.js"></script>
+        <script src="{{assetsUrl}}/assets/router.js"></script>
+        <script src="{{assetsUrl}}/assets/loginCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/logoutCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/menuCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/pointsCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/createQuestionCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/tagsCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/usersCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/answerCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/answerCreatorCtrl.js"> </script>
+        <script src="{{assetsUrl}}/assets/homeCtrl.js"> </script>
+      -->
 
   </body>
 </html>
